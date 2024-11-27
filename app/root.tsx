@@ -39,20 +39,20 @@ export async function loader({ request }: LoaderFunctionArgs) {
 
 export function Layout({ children }: { children: React.ReactNode }) {
   let { locale, session } = useLoaderData<typeof loader>();
-  console.log(locale);
+  // console.log(locale);
 
-  let { i18n } = useTransition();
+  // let { i18n } = useTransition();
 
   // This hook will change the i18n instance language to the current locale
   // detected by the loader, this way, when we do something to change the
   // language, this locale will change and i18next will load the correct
   // translation files
-  useChangeLanguage(locale);
+  // useChangeLanguage(locale);
 
   const userId = session.data.userId ? session.data.userId : null
 
   return (
-    <html lang={locale} dir={i18n.dir()}>
+    <html lang="en">
       <head>
         <meta charSet="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />

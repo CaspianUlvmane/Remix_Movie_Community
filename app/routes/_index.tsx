@@ -37,7 +37,7 @@ export default function Index() {
   return (
     <div className="py-6 sm:py-8 lg:py-12">
       <div className="flex max-w-screen-lg mx-auto align-middle justify-center">
-        <h2 className="p-4 text-3xl font-bold font-sans">{t("homeTitle")}</h2>
+        <h2 className="p-4 text-3xl font-bold font-sans">Top Trending Movies</h2>
       </div>
       <div className="grid gap-4 sm:grid-cols-2 md:gap-6 lg:grid-cols-3 xl:grid-cols-4 xl:gap-8 lg:max-w-screen-md xl:max-w-screen-lg md:max-w-screen-sm mx-auto">
         {movies.results.map((movie: any) => (
