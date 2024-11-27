@@ -3,6 +3,7 @@ import { LoaderArgs } from "@remix-run/node"
 import type { ActionArgs } from "@remix-run/node"
 import { db } from "utils/db.server";
 import { getSession } from "utils/sessions";
+import comment from "~/components/comment";
 
 export async function loader({ request, params }: LoaderArgs) {
     const session = await getSession(request.headers.get("Cookie"))
@@ -15,7 +16,9 @@ export async function loader({ request, params }: LoaderArgs) {
         }
     })
 
-    return { data, session }
+    const users = await db.user.findMany({})
+
+    return { data, session, users }
 }
 
 export async function action({ request }: ActionArgs) {
@@ -37,7 +40,7 @@ export async function action({ request }: ActionArgs) {
 export default function movieComments() {
 
     const { id } = useParams()
-    const { data, session } = useLoaderData<typeof loader>()
+    const { data, session, users } = useLoaderData<typeof loader>()
     console.log(data, session);
 
     const userId = session.data.userId ? session.data.userId : null
@@ -64,17 +67,7 @@ export default function movieComments() {
             </div>
             <div className="pt-6">
                 {data.map((post) => (
-                    <div key={post.id} className="pt-6">
-                        {post.authorId ? (
-                            <h3>User {post.authorId}:</h3>
-                        )
-                            :
-                            (<></>)}
-                        {post.rating ? (
-                            <p>Score: {post.rating}</p>
-                        ) : (<></>)}
-                        <p className="">{post.message}</p>
-                    </div>
+                    comment(post, users)
                 ))}
             </div>
         </div >
