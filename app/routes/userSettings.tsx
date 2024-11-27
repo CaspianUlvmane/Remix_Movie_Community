@@ -33,9 +33,7 @@ export async function loader({ request, params }: LoaderArgs) {
 export async function action({ request }: ActionArgs) {
     const formData = await request.formData()
 
-    const authorId = formData.get("authorId")
-
-    const data = await db.comments.create({
+    const data = await db.comments.patch({
         data: {
             message: formData.get("comment") as string,
             movieId: Number(formData.get("id")) as number,
@@ -60,9 +58,9 @@ export default function UserSettings() {
         <div className="rounded-lg border p-3 my-16 max-w-screen-md m-auto">
             <h1 className="text-3xl font-semibold">Settings for {user?.username}</h1>
             <div className="flex flex-col gap-10">
-                <Form method="POST">
+                <Form method="PATCH">
                     <label htmlFor="newUsername">Change Username:</label>
-                    <input name="newUsername" placeholder="Username" className="w-full border border-pink-400 rounded-lg p-2 my-2"></input>
+                    <input name="newUsername" placeholder="New username" className="w-full border border-pink-400 rounded-lg p-2 my-2"></input>
                     <input name="password" type="password" placeholder="Password" className="w-full border border-pink-400 rounded-lg p-2 my-2"></input>
                     {navigation.state === "submitting" ? (
                         <button type="button" disabled className="bg-pink-400 px-4 py-2 rounded-lg text-white">Loading...</button>
@@ -72,7 +70,7 @@ export default function UserSettings() {
                     )}
                 </Form>
 
-                <Form method="POST">
+                <Form method="PATCH">
                     <label htmlFor="password">Change Password:</label>
                     <input name="password" type="password" placeholder="Password" className="w-full border border-pink-400 rounded-lg p-2 my-2"></input>
                     <input name="newPassword" type="password" placeholder="New password" className="w-full border border-pink-400 rounded-lg p-2 my-2"></input>
@@ -84,10 +82,10 @@ export default function UserSettings() {
                         <button type="submit" className="bg-pink-400 px-4 py-2 rounded-lg text-white">Change Password</button>
                     )}
                 </Form>
-                <Link to={"/signOut"} prefetch="intent" className="p-3 rounded-xl bg-pink-600 w-24">
+                <Link to={"/signOut"} prefetch="intent" className="px-3 py-2 rounded-lg bg-pink-600 w-24">
                     Sign Out
                 </Link>
-                <Form method="POST">
+                <Form method="DELETE">
                     <input type="hidden" name="id" value={Number(userId)} />
                     {navigation.state === "submitting" ? (
                         <button type="button" disabled className="bg-pink-400 px-4 py-2 rounded-lg text-white">Loading...</button>
