@@ -53,8 +53,8 @@ export function Layout({ children }: { children: React.ReactNode }) {
             Remix <span className="text-pink-500">Test</span>
           </Link>
           {userId ? (
-            <Link to={"/signOut"} prefetch="intent" className="">
-              Sign Out
+            <Link to={"/userSettings"} prefetch="intent" className="">
+              My Pages
             </Link>
           )
             :
