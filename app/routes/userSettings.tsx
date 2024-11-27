@@ -1,7 +1,7 @@
-import { Form, Link, useLoaderData, useNavigation } from "@remix-run/react"
+import { Form, Link, redirect, useLoaderData, useNavigation } from "@remix-run/react"
 import { LoaderArgs } from "@remix-run/node"
 import type { ActionArgs } from "@remix-run/node"
-import { getSession } from "utils/sessions"
+import { commitSession, getSession } from "utils/sessions"
 import { db } from "utils/db.server"
 
 
@@ -30,18 +30,44 @@ export async function loader({ request, params }: LoaderArgs) {
     return { data, session, user }
 }
 
+
 export async function action({ request }: ActionArgs) {
     const formData = await request.formData()
-
-    const data = await db.comments.patch({
-        data: {
-            message: formData.get("comment") as string,
-            movieId: Number(formData.get("id")) as number,
-            rating: Number(formData.get("rating")) as number,
-            authorId: authorId ? Number(authorId) : null
+    const session = await getSession(request.headers.get("Cookie"))
+    const userId = session.data.userId ? session.data.userId : null
+    const user = await db.user.findFirst({
+        where: {
+            id: Number(userId)
         }
     })
-    return data
+
+    const newUsername = formData.get("newUsername")
+
+    if (newUsername !== "") {
+        if (user.password !== formData.get("password")) {
+            session.flash("error", "Wrong password, try again")
+            // Redirect back to the login page with errors.
+            return redirect("/userSettings", {
+                headers: {
+                    "Set-Cookie": await commitSession(session),
+                },
+            })
+        }
+        const newuser = await db.user.update({
+            where: {
+                id: userId ? Number(userId) : null
+            },
+            data: {
+                username: newUsername
+            }
+        })
+        session.flash("error", "")
+        return redirect("/userSettings", {
+            headers: {
+                "Set-Cookie": await commitSession(session),
+            },
+        })
+    }
 }
 
 export default function UserSettings() {
@@ -51,11 +77,12 @@ export default function UserSettings() {
     console.log(data, session, user);
 
     const userId = session.data.userId ? session.data.userId : null
-
+    const error = session.data.__flash_error__
     const navigation = useNavigation()
 
     return (
         <div className="rounded-lg border p-3 my-16 max-w-screen-md m-auto">
+            {error ? <div className="error">{error}</div> : null}
             <h1 className="text-3xl font-semibold">Settings for {user?.username}</h1>
             <div className="flex flex-col gap-10">
                 <Form method="PATCH">
