@@ -5,8 +5,11 @@ import {
   Outlet,
   Scripts,
   ScrollRestoration,
+  useLoaderData,
 } from "@remix-run/react";
-import type { LinksFunction } from "@remix-run/node";
+import type { LinksFunction, LoaderFunctionArgs } from "@remix-run/node";
+import { getSession } from "utils/sessions";
+
 
 import "./tailwind.css";
 
@@ -23,7 +26,19 @@ export const links: LinksFunction = () => [
   },
 ];
 
+export async function loader({ request }: LoaderFunctionArgs) {
+
+  const session = await getSession(request.headers.get("Cookie"));
+
+  return session
+
+}
+
 export function Layout({ children }: { children: React.ReactNode }) {
+
+  const session = useLoaderData<typeof loader>()
+  const userId = session.data.userId ? session.data.userId : null
+
   return (
     <html lang="en">
       <head>
@@ -37,15 +52,24 @@ export function Layout({ children }: { children: React.ReactNode }) {
           <Link to={"/"} prefetch="intent">
             Remix <span className="text-pink-500">Test</span>
           </Link>
-          <Link to={"/dashboard"} prefetch="intent" className="">
-            Dashboard
-          </Link>
+          {userId ? (
+            <Link to={"/signOut"} prefetch="intent" className="">
+              Sign Out
+            </Link>
+          )
+            :
+            (
+              <Link to={"/signIn"} prefetch="intent" className="">
+                Sign in
+              </Link>
+            )}
+
         </nav>
         {children}
         <ScrollRestoration />
         <Scripts />
       </body>
-    </html>
+    </html >
   );
 }
 

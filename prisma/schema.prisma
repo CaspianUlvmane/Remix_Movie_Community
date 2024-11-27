@@ -17,6 +17,17 @@ model comments {
   id        Int      @id @default(autoincrement())
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  movieId  Int?
-  message String   
+  movieId   Int?
+  message   String
+  rating    Int      @default(0)
+  author    user?     @relation(fields: [authorId], references: [id])
+  authorId  Int?
+}
+
+model user {
+  id       Int        @id @default(autoincrement())
+  username String
+  password String
+  @@unique([username])
+  comments comments[]
 }

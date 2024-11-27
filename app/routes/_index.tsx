@@ -1,6 +1,7 @@
 import type { MetaFunction } from "@remix-run/node";
 import type { LoaderArgs } from "@remix-run/node"
 import { Link, useLoaderData } from "@remix-run/react";
+import { getSession, commitSession } from "utils/sessions";
 
 export const meta: MetaFunction = () => {
   return [
@@ -9,7 +10,9 @@ export const meta: MetaFunction = () => {
   ];
 };
 
-export async function loader({ }: LoaderArgs) {
+export async function loader({ request }: LoaderArgs) {
+
+  const session = await getSession(request.headers.get("Cookie"));
 
   const url = await fetch('https://api.themoviedb.org/3/trending/movie/day?language=en-US', {
     headers: {
@@ -23,7 +26,8 @@ export async function loader({ }: LoaderArgs) {
 
 export default function Index() {
 
-  const data = useLoaderData()
+  const movies = useLoaderData()
+
 
   return (
     <div className="py-6 sm:py-8 lg:py-12">
@@ -31,7 +35,7 @@ export default function Index() {
         <h2 className="p-4 text-3xl font-bold font-sans">Top Trending Movies</h2>
       </div>
       <div className="grid gap-4 sm:grid-cols-2 md:gap-6 lg:grid-cols-3 xl:grid-cols-4 xl:gap-8 lg:max-w-screen-md xl:max-w-screen-lg md:max-w-screen-sm mx-auto">
-        {data.results.map((movie: any) => (
+        {movies.results.map((movie: any) => (
           <div className="flex flex-col overflow-hidden rounded-lg border-2 border-pink-400">
 
             <Link to={`movie/${movie.id}/comments`} prefetch="intent" className="group relative block h-48 overflow-hidden bg-pink-400 md:h-64">
