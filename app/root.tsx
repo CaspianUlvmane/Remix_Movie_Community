@@ -12,6 +12,9 @@ import { getSession } from "utils/sessions";
 
 
 import "./tailwind.css";
+import { useChangeLanguage } from "remix-i18next/react";
+import { useTransition } from "react";
+import i18next from "utils/i18next.server";
 
 export const links: LinksFunction = () => [
   { rel: "preconnect", href: "https://fonts.googleapis.com" },
@@ -27,20 +30,29 @@ export const links: LinksFunction = () => [
 ];
 
 export async function loader({ request }: LoaderFunctionArgs) {
-
+  let locale = await i18next.getLocale(request);
   const session = await getSession(request.headers.get("Cookie"));
 
-  return session
+  return { session, locale }
 
 }
 
 export function Layout({ children }: { children: React.ReactNode }) {
+  let { locale, session } = useLoaderData<typeof loader>();
+  console.log(locale);
 
-  const session = useLoaderData<typeof loader>()
+  let { i18n } = useTransition();
+
+  // This hook will change the i18n instance language to the current locale
+  // detected by the loader, this way, when we do something to change the
+  // language, this locale will change and i18next will load the correct
+  // translation files
+  useChangeLanguage(locale);
+
   const userId = session.data.userId ? session.data.userId : null
 
   return (
-    <html lang="en">
+    <html lang={locale} dir={i18n.dir()}>
       <head>
         <meta charSet="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
