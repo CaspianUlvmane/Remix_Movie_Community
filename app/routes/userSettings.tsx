@@ -42,32 +42,75 @@ export async function action({ request }: ActionArgs) {
     })
 
     const newUsername = formData.get("newUsername")
-
-    if (newUsername !== "") {
-        if (user.password !== formData.get("password")) {
-            session.flash("error", "Wrong password, try again")
-            // Redirect back to the login page with errors.
+    if (formData.method === "PATCH") {
+        if (newUsername !== "") {
+            if (user.password !== formData.get("password")) {
+                session.flash("error", "Wrong password, try again")
+                // Redirect back to the login page with errors.
+                return redirect("/userSettings", {
+                    headers: {
+                        "Set-Cookie": await commitSession(session),
+                    },
+                })
+            }
+            const newuser = await db.user.update({
+                where: {
+                    id: userId ? Number(userId) : null
+                },
+                data: {
+                    username: newUsername
+                }
+            })
+            session.flash("error", "")
             return redirect("/userSettings", {
                 headers: {
                     "Set-Cookie": await commitSession(session),
                 },
             })
-        }
-        const newuser = await db.user.update({
-            where: {
-                id: userId ? Number(userId) : null
-            },
-            data: {
-                username: newUsername
+        } else {
+            if (user?.password !== formData.get("password") || formData.get("newPassword") !== formData.get("repeatNewPassword")) {
+                session.flash("error", "Password doesn't match, try again.")
+                // Redirect back to the login page with errors.
+                return redirect("/userSettings", {
+                    headers: {
+                        "Set-Cookie": await commitSession(session),
+                    },
+                })
+            } else {
+                const newuser = await db.user.update({
+                    where: {
+                        id: userId ? Number(userId) : null
+                    },
+                    data: {
+                        password: formData.get("newPassword")
+                    }
+                })
+                session.flash("error", "")
+                return redirect("/userSettings", {
+                    headers: {
+                        "Set-Cookie": await commitSession(session),
+                    },
+                })
             }
-        })
-        session.flash("error", "")
-        return redirect("/userSettings", {
-            headers: {
-                "Set-Cookie": await commitSession(session),
-            },
-        })
+        }
     }
+
+
+    const removeUser = await db.user.delete({
+        where: {
+            id: userId ? Number(userId) : null
+        }
+    })
+    session.flash("error", "")
+    session.set("userId", "")
+    return redirect("/", {
+        headers: {
+            "Set-Cookie": await commitSession(session),
+        },
+    })
+
+
+
 }
 
 export default function UserSettings() {
@@ -82,7 +125,7 @@ export default function UserSettings() {
 
     return (
         <div className="rounded-lg border p-3 my-16 max-w-screen-md m-auto">
-            {error ? <div className="error">{error}</div> : null}
+            {error ? <div className="error text-red-600">{error}</div> : null}
             <h1 className="text-3xl font-semibold">Settings for {user?.username}</h1>
             <div className="flex flex-col gap-10">
                 <Form method="PATCH">
@@ -109,19 +152,25 @@ export default function UserSettings() {
                         <button type="submit" className="bg-pink-400 px-4 py-2 rounded-lg text-white">Change Password</button>
                     )}
                 </Form>
+
                 <Link to={"/signOut"} prefetch="intent" className="px-3 py-2 rounded-lg bg-pink-600 w-24">
                     Sign Out
                 </Link>
+
                 <Form method="DELETE">
                     <input type="hidden" name="id" value={Number(userId)} />
                     {navigation.state === "submitting" ? (
                         <button type="button" disabled className="bg-pink-400 px-4 py-2 rounded-lg text-white">Loading...</button>
 
                     ) : (
-                        <button type="submit" className="bg-red-600 px-4 py-2 rounded-lg text-white">Delete Account</button>
+                        <button type="submit" onClick={() => { confirmDelete() }} className="bg-red-600 px-4 py-2 rounded-lg text-white">Delete Account</button>
                     )}
                 </Form>
             </div>
-        </div>
+        </div >
     )
+}
+
+function confirmDelete(event) {
+    return confirm('Are you sure?')
 }

@@ -69,8 +69,8 @@ export default function signIn() {
     return (
         <div className="rounded-lg border p-3 max-w-screen-sm m-auto my-12">
             <h1 className="text-3xl font-semibold">Sign in</h1>
-            <a href="/signUp"><p className="text-lg font-semibold hover:text-pink-200">or sign up</p></a>
-            {error ? <div className="error">{error}</div> : null}
+            <a href="/signUp" className="flex w-fit"><p className="text-lg font-semibold text-pink-400 hover:text-pink-600">or sign up</p></a>
+            {error ? <div className="error text-red-600">{error}</div> : null}
             <div>
                 <Form method="POST">
                     <input name="username" placeholder="Username" className="w-full border border-pink-400 rounded-lg p-2 my-2"></input>
