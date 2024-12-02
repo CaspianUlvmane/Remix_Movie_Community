@@ -1,3 +1,19 @@
 {
-    "homeTitle": "Top Trending Movies"
-  }
+  "homeTitle": "Trending Movies",
+  "logIn" : "Sign in",
+  "logOut": "Sign out",
+  "myPages": "My pages",
+  "commentPrompt": "Write a review",
+  "addButton": "Add comment",
+  "loading": "Loading",
+  "movieSite": "Website",
+  "settingsTitle": "Settings for",
+  "changeUsername": "Change username",
+  "changePassword": "Change password",
+  "newUsername": "New username",
+  "newPassword": "New password",
+  "username": "Username",
+  "password": "Password",
+  "repeatPassword": "Repeat password",
+  "deleteAccount": "Delete account"
+}

@@ -3,7 +3,7 @@ import type { LoaderArgs } from "@remix-run/node"
 import { Link, useLoaderData } from "@remix-run/react";
 import { getSession, commitSession } from "utils/sessions";
 import { useTranslation } from "react-i18next";
-
+import i18next from "utils/i18next.server";
 
 
 
@@ -15,10 +15,10 @@ export const meta: MetaFunction = () => {
 };
 
 export async function loader({ request }: LoaderArgs) {
-
+  let locale = await i18next.getLocale(request);
   const session = await getSession(request.headers.get("Cookie"));
 
-  const url = await fetch('https://api.themoviedb.org/3/trending/movie/day?language=en-US', {
+  const url = await fetch(`https://api.themoviedb.org/3/trending/movie/day?language=${locale}`, {
     headers: {
       accept: 'application/json',
       Authorization: 'Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiI4YTc4MTEzZTJhYWJhZGU0NGQzNzVlZGRmNGI2NjZlOSIsIm5iZiI6MTczMTkyMTI4Ni4zNTQ4MzUzLCJzdWIiOiI2NzNiMDQ5ZWY3NDFlYjA0MjhiNjI2ZmUiLCJzY29wZXMiOlsiYXBpX3JlYWQiXSwidmVyc2lvbiI6MX0.EQCgYI17ha_PqjbVxtXYwkGDMyB0u-6MgcRdP9ev-jc'
@@ -37,7 +37,7 @@ export default function Index() {
   return (
     <div className="py-6 sm:py-8 lg:py-12">
       <div className="flex max-w-screen-lg mx-auto align-middle justify-center">
-        <h2 className="p-4 text-3xl font-bold font-sans">Top Trending Movies</h2>
+        <h2 className="p-4 text-3xl font-bold font-sans">{t("homeTitle")} </h2>
       </div>
       <div className="grid gap-4 sm:grid-cols-2 md:gap-6 lg:grid-cols-3 xl:grid-cols-4 xl:gap-8 lg:max-w-screen-md xl:max-w-screen-lg md:max-w-screen-sm mx-auto">
         {movies.results.map((movie: any) => (

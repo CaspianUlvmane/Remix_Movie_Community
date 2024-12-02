@@ -1,3 +1,19 @@
 {
-    "homeTitle": "Trendiga filmer"
+    "homeTitle": "Trendiga filmer",
+    "logIn" : "Logga in",
+    "logOut": "Logga ut",
+    "myPages": "Mina Sidor",
+    "commentPrompt": "Skriv en recension",
+    "addButton": "Lägg till kommentar",
+    "loading": "Laddar",
+    "movieSite": "Webbplats",
+    "settingsTitle": "Inställningar för",
+    "changeUsername": "Byt användarnamn",
+    "changePassword": "Byt lösenord",
+    "newUsername": "Nytt användarnamn",
+    "newPassword": "Nytt lösenord",
+    "username": "Användarnamn",
+    "password": "Lösenord",
+    "repeatPassword": "Upprepa lösenord",
+    "deleteAccount": "Ta bort konto"
   }

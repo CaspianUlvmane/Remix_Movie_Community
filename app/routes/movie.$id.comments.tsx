@@ -4,6 +4,7 @@ import type { ActionArgs } from "@remix-run/node"
 import { db } from "utils/db.server";
 import { getSession } from "utils/sessions";
 import comment from "~/components/comment";
+import { useTranslation } from "react-i18next";
 
 export async function loader({ request, params }: LoaderArgs) {
     const session = await getSession(request.headers.get("Cookie"))
@@ -46,10 +47,11 @@ export default function movieComments() {
     const userId = session.data.userId ? session.data.userId : null
 
     const navigation = useNavigation()
+    let { t } = useTranslation();
 
     return (
         <div className="rounded-lg border p-3">
-            <h1 className="text-3xl font-semibold">Write a review</h1>
+            <h1 className="text-3xl font-semibold">{t("commentPrompt")}</h1>
             <div>
                 <Form method="POST" onChange={({ target }) => slider(target)}>
                     <textarea name="comment" className="w-full border border-pink-400 rounded-lg p-2 my-2"></textarea>
@@ -58,10 +60,10 @@ export default function movieComments() {
                     <input type="hidden" name="id" value={Number(id)} />
                     {userId ? (<input type="hidden" name="authorId" value={Number(userId)} />) : (<input type="hidden" name="authorId" value={null}></input>)}
                     {navigation.state === "submitting" ? (
-                        <button type="button" disabled className="bg-pink-400 px-4 py-2 rounded-lg text-white">Loading...</button>
+                        <button type="button" disabled className="bg-pink-400 px-4 py-2 rounded-lg text-white">{t("loading")}...</button>
 
                     ) : (
-                        <button type="submit" className="bg-pink-400 px-4 py-2 rounded-lg text-white">Add Comment</button>
+                        <button type="submit" className="bg-pink-400 px-4 py-2 rounded-lg text-white">{t("addButton")}</button>
                     )}
                 </Form>
             </div>
